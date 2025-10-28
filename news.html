@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>News | OVTF1</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles for News */
+    body { background: #15151e; color: #ffffff; }
+    .news-hero { text-align: center; margin: 24px 0; color: #ffffff; }
+    .news-hero h1 { font-size: 2.2rem; margin: 0 0 8px; color: #ffffff; }
+    .news-hero p { color: #999; margin: 0 0 12px; }
+    .container { max-width: 1600px; margin: 0 auto; padding: 0 20px; }
+    .navbar { background: #15151e; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .navbar a { color: #ffffff; }
+
+    .news-controls { display:flex; gap:8px; justify-content:center; margin-bottom:24px; }
+    .news-controls button { 
+      padding: 12px 24px; 
+      border-radius: 4px; 
+      border: 0; 
+      background: #e10600; 
+      color: #fff; 
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    .news-controls button:hover { background: #ff1801; }
+
+    .news-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap:18px; max-width:1600px; margin:0 auto; padding: 0 16px 48px; }
+    .news-card { 
+      background: #1f1f2d; 
+      border-radius: 8px; 
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2); 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      min-height: 420px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .news-card .media { height: 240px; background: #15151e; display:block; overflow:hidden; }
+    .news-card .media img { width:100%; height:100%; object-fit:cover; display:block; }
+    .news-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(225,6,0,0.15); }
+    .news-card .body { padding: 20px; background: #1f1f2d; display:flex; flex-direction:column; gap:8px; flex:1; }
+    .news-card h3 { margin: 0 0 12px; font-size: 1.2rem; line-height: 1.4; }
+    .news-card h3 a { color: #ffffff; text-decoration: none; }
+    .news-card p.excerpt { margin:0; color: #999; font-size:0.95rem; line-height: 1.5; flex:1; }
+    .news-card .meta { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .news-card .meta small { color: #666; }
+    .news-card a.readmore { color:#e10600; text-decoration:none; font-weight:600; }
+
+    .loader { text-align:center; color:#777; padding:36px 0; }
+
+  @media (max-width:420px){ .news-hero h1{ font-size:1.5rem } }
+  /* Hero + sidebar layout */
+  .hero-layout{ display:flex; gap:20px; align-items:flex-start; justify-content:center; max-width:1200px; margin:18px auto; padding:0 16px; }
+  .hero-main{ flex: 1 1 64%; }
+  .news-sidebar{ flex: 0 0 320px; display:flex; flex-direction:column; gap:14px; }
+    .news-sidebar .compact-card { 
+      background: #1f1f2d; 
+      color: #fff; 
+      border-radius: 6px; 
+      padding: 12px; 
+      display: flex; 
+      gap: 16px; 
+      align-items: center; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background 0.2s;
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+    .news-sidebar .compact-card:hover {
+      transform: translateX(4px);
+      background: #2a2a3d;
+    }
+    .news-sidebar .compact-card img{ width:100px; height:66px; object-fit:cover; border-radius:4px; flex-shrink:0; }
+    .news-sidebar .compact-card h4{ margin:0; font-size:1rem; line-height:1.4; font-weight:600; }
+    .news-sidebar .compact-card a{ color:inherit; text-decoration:none; }
+    .news-sidebar .compact-card p{ margin:0; font-size:0.85rem; color:#999; }
+  @media (max-width:900px){ .hero-layout{ flex-direction:column; } .news-sidebar{ width:100%; order:2 } .hero-main{ order:1 } }
+    /* Larger hero card styling */
+    .news-hero .news-card { max-width:760px; margin:18px auto; box-shadow:0 12px 30px rgba(225,16,16,0.15); }
+    .news-hero .news-card .media { height:220px; }
+    .news-hero .news-card h3 { font-size:1.4rem; text-align:center; }
+    .news-hero .news-card .excerpt { text-align:center; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="home.html">Home</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="classifiche.html">Classifiche</a>
+    <a href="piloti.html">Piloti</a>
+    <a href="costruttori.html">Costruttori</a>
+    <a href="squadre.html">Squadre e Piloti</a>
+    <a href="circuiti.html">Circuiti</a>
+    <a href="news.html">News</a>
+    <a href="multimedia.html">Multimedia</a>
+    <a href="storia.html">Storia</a>
+    <a href="forum.html">Forum</a>
+    <a href="shop.html">Shop</a>
+    <a href="contatti.html">Contatti</a>
+  </nav>
+
+  <div class="container">
+    <section class="news-hero">
+      <h1>News</h1>
+      <p>Aggiornamenti, comunicati e rumor dal paddock — aggiornati automaticamente.</p>
+      <div class="news-controls">
+        <button id="refreshBtn">Aggiorna</button>
+      </div>
+      <!-- Hero + sidebar layout -->
+      <div class="hero-layout">
+        <div class="hero-main">
+          <!-- Hero card container: qui appare il quadrettino principale con la prima news -->
+          <div id="hero-card" style="display:none"></div>
+        </div>
+        <aside class="news-sidebar" id="news-sidebar" style="display:none"></aside>
+      </div>
+    </section>
+
+    <div id="news-root">
+      <div class="loader" id="news-loader">Caricamento news...</div>
+      <div class="news-grid" id="news-grid" style="display:none"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Carica automaticamente il feed Atom ufficiale di Formula1 e costruisce le card.
+    // Uso diversi proxy per evitare problemi CORS
+    const feedUrl = 'https://www.formula1.com/en/latest/all.xml';
+    const proxyUrls = [
+      'https://corsproxy.io/?' + encodeURIComponent(feedUrl),
+      'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl),
+      'https://proxy.cors.sh/' + feedUrl,
+      'https://cors-anywhere.herokuapp.com/' + feedUrl
+    ];
+
+    (function(feedUrl, proxyUrls){
+      // Constants are moved to outer scope
+      const loader = document.getElementById('news-loader');
+  const grid = document.getElementById('news-grid');
+  const heroCard = document.getElementById('hero-card');
+  const sidebar = document.getElementById('news-sidebar');
+  const refreshBtn = document.getElementById('refreshBtn');
+  let parsedEntries = [];
+
+      function excerptFromHtml(html, maxLength=180){
+        const tmp = document.createElement('div'); tmp.innerHTML = html || '';
+        const text = tmp.textContent || tmp.innerText || '';
+        return text.length > maxLength ? text.slice(0, maxLength).trim() + '…' : text;
+      }
+
+      function getImageFromContent(html){
+        if(!html) return null;
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        // Try different image sources in order of preference
+        const selectors = [
+          'img[class*="lead"]', // Lead images
+          'img[class*="main"]', // Main images
+          'img[class*="hero"]', // Hero images
+          'img[src*="hero"]',   // Images with hero in URL
+          'img[src*="main"]',   // Images with main in URL
+          'img:not([src*="thumb"])', // Any non-thumbnail image
+          'img'                 // Any image as fallback
+        ];
+        for(const selector of selectors) {
+          const img = tmp.querySelector(selector);
+          if(img && img.src && !img.src.includes('data:')) return img.src;
+        }
+        return 'https://www.formula1.com/etc/designs/fom-website/images/f1_logo.svg';
+      }
+
+      function buildCard(item){
+        const card = document.createElement('article'); card.className = 'news-card';
+
+        const media = document.createElement('div'); media.className = 'media';
+        const img = document.createElement('img'); img.alt = item.title || 'Immagine';
+        img.src = item.image || 'https://www.formula1.com/etc/designs/fom-website/images/f1_logo.svg';
+        media.appendChild(img);
+
+        const body = document.createElement('div'); body.className = 'body';
+        const h3 = document.createElement('h3');
+        const a = document.createElement('a'); a.href = item.link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = item.title;
+        h3.appendChild(a);
+
+        const excerpt = document.createElement('p'); excerpt.className = 'excerpt'; excerpt.textContent = item.excerpt || '';
+
+        const meta = document.createElement('div'); meta.className = 'meta';
+        const date = document.createElement('small'); date.textContent = item.pubDate || '';
+        const readmore = document.createElement('a'); readmore.className = 'readmore'; readmore.href = item.link; readmore.target = '_blank'; readmore.rel = 'noopener'; readmore.textContent = 'Leggi';
+        meta.appendChild(date); meta.appendChild(readmore);
+
+        body.appendChild(h3); body.appendChild(excerpt); body.appendChild(meta);
+
+        card.appendChild(media); card.appendChild(body);
+        return card;
+      }
+
+      function renderEntries(entries){
+        grid.innerHTML = '';
+        entries.forEach(entry => {
+          const title = (entry.querySelector('title') && entry.querySelector('title').textContent) || 'Senza titolo';
+          const linkEl = entry.querySelector('link[rel="alternate"]') || entry.querySelector('link');
+          const link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent) : '#';
+          const published = entry.querySelector('published') ? new Date(entry.querySelector('published').textContent).toLocaleString('it-IT') : (entry.querySelector('pubDate') ? new Date(entry.querySelector('pubDate').textContent).toLocaleString('it-IT') : '');
+          const contentEl = entry.querySelector('content') || entry.querySelector('summary') || entry.querySelector('description');
+          const contentHtml = contentEl ? (contentEl.innerHTML || contentEl.textContent) : '';
+          const image = getImageFromContent(contentHtml, index);
+          const excerpt = excerptFromHtml(contentHtml, 160);
+
+          const item = { title, link, pubDate: published, image, excerpt };
+          grid.appendChild(buildCard(item));
+        });
+      }
+
+      // Mostra la prima news dentro il box hero (quadrettino centrale)
+      // Accetta sia un oggetto 'item' già parsato che un nodo XML 'entry'.
+      function renderHero(entry){
+        let item;
+        if(entry && entry.title){
+          item = entry;
+        } else {
+          const title = (entry.querySelector('title') && entry.querySelector('title').textContent) || 'Senza titolo';
+          const linkEl = entry.querySelector('link[rel="alternate"]') || entry.querySelector('link');
+          const link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent) : '#';
+          const published = entry.querySelector('published') ? new Date(entry.querySelector('published').textContent).toLocaleString('it-IT') : (entry.querySelector('pubDate') ? new Date(entry.querySelector('pubDate').textContent).toLocaleString('it-IT') : '');
+          const contentEl = entry.querySelector('content') || entry.querySelector('summary') || entry.querySelector('description');
+          const contentHtml = contentEl ? (contentEl.innerHTML || contentEl.textContent) : '';
+          const image = getImageFromContent(contentHtml);
+          const excerpt = excerptFromHtml(contentHtml, 220);
+          item = { title, link, pubDate: published, image, excerpt };
+        }
+
+        heroCard.innerHTML = '';
+        const card = buildCard(item);
+        heroCard.appendChild(card);
+        heroCard.style.display = '';
+        loader.style.display = 'none';
+        grid.style.display = 'none';
+      }
+
+      // Render a compact sidebar with small announcement cards (right column)
+      function renderSidebar(items){
+        if(!items || items.length === 0){ sidebar.style.display = 'none'; return; }
+        sidebar.innerHTML = '';
+        items.forEach(itemData => {
+          const title = itemData.title || 'Senza titolo';
+          const link = itemData.link || '#';
+          const image = itemData.image || 'https://www.formula1.com/etc/designs/fom-website/images/f1_logo.svg';
+
+          const item = document.createElement('a');
+          item.className = 'compact-card';
+          item.href = link; item.target = '_blank'; item.rel = 'noopener';
+          item.innerHTML = '<img src="'+image+'" alt="thumb"/>' +
+                           '<div class="compact-body"><h4>'+title+'</h4></div>';
+
+          // click normale: aggiorna l'hero (previene apertura della nuova scheda)
+          item.addEventListener('click', function(evt){
+            // allow open in new tab when Ctrl/Cmd or middle-click is used
+            if(evt.ctrlKey || evt.metaKey || evt.button === 1) return;
+            evt.preventDefault();
+            renderHero(itemData);
+          });
+
+          sidebar.appendChild(item);
+        });
+        sidebar.style.display = '';
+      }
+
+      function showError(msg){ loader.textContent = msg; loader.style.color = '#b00'; }
+
+      async function fetchFeed(){
+        loader.style.display = '';
+        grid.style.display = 'none';
+        loader.textContent = 'Caricamento news...';
+        loader.style.color = '#777';
+
+        // Prova ogni proxy in sequenza con un ritardo tra i tentativi
+        for(let i = 0; i < proxyUrls.length; i++) {
+          try {
+            const res = await fetch(proxyUrls[i]);
+            if(!res.ok) throw new Error('Proxy error ' + res.status);
+            const data = await res.json();
+            const parser = new DOMParser();
+            // Gestisci sia il caso in cui il proxy restituisce {contents: ...} che il caso diretto
+            const xmlContent = data.contents || data;
+            const xml = parser.parseFromString(xmlContent, 'application/xml');
+            if(xml.querySelector('parsererror')) throw new Error('Parse error');
+            
+            const entries = Array.from(xml.querySelectorAll('entry, item')).slice(0,12);
+            if(!entries.length) throw new Error('No entries');
+            
+            // Se arriviamo qui, abbiamo i dati
+            parsedEntries = entries.map(entry => {
+              const title = entry.querySelector('title')?.textContent || 'Senza titolo';
+              const link = entry.querySelector('link[rel="alternate"]')?.getAttribute('href') 
+                       || entry.querySelector('link')?.textContent 
+                       || '#';
+              const published = new Date(
+                entry.querySelector('published')?.textContent || 
+                entry.querySelector('pubDate')?.textContent || 
+                new Date()
+              ).toLocaleString('it-IT');
+              const contentEl = entry.querySelector('content') || entry.querySelector('description');
+              const contentHtml = contentEl ? (contentEl.innerHTML || contentEl.textContent) : '';
+              const image = getImageFromContent(contentHtml, index);
+              const excerpt = excerptFromHtml(contentHtml, 220);
+              return { title, link, pubDate: published, image, excerpt };
+            });
+
+            renderHero(parsedEntries[0]);
+            renderSidebar(parsedEntries.slice(1, 7));
+            return; // Success!
+          } catch(e) {
+            console.warn(`Proxy ${i + 1} failed:`, e);
+            if(i < proxyUrls.length - 1) {
+              // Se non è l'ultimo tentativo, aspetta un po' e prova il prossimo
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              loader.textContent = `Riprovo con altra fonte... (${i + 2}/${proxyUrls.length})`;
+              continue;
+            }
+          }
+        }
+        
+        // Se arriviamo qui, tutti i proxy hanno fallito
+        throw new Error('Tutti i tentativi falliti');
+      }
+
+      // Gestione errori
+      function handleFetchError(e) {
+        console.error('Feed fetch failed:', e);
+        loader.style.display = 'none';
+        heroCard.style.display = '';
+        heroCard.innerHTML = '';
+        const fallbackCard = document.createElement('article');
+        fallbackCard.className = 'news-card';
+        fallbackCard.innerHTML = `
+          <div class="media">
+            <img src="https://www.formula1.com/etc/designs/fom-website/images/f1_logo.svg" alt="F1">
+          </div>
+          <div class="body">
+            <h3>News non disponibili</h3>
+            <p class="excerpt">Impossibile caricare le news automaticamente. Ecco alcune news di esempio.</p>
+            <div class="meta">
+              <small></small>
+              <a class="readmore" href="https://www.formula1.com/en/latest.html" target="_blank" rel="noopener">Vai al sito F1</a>
+            </div>
+          </div>`;
+        heroCard.appendChild(fallbackCard);
+
+        // Fallback: mostra news di esempio nella griglia e sidebar
+        const sampleNews = [
+          {
+            title: 'F1: Ferrari presenta la nuova SF-24',
+            link: 'https://www.formula1.com/en/latest/article.ferrari-sf24-launch.1.html',
+            pubDate: '28/10/2025',
+            image: 'https://www.formula1.com/content/dam/fom-website/manual/2024/2024CarLaunch/Ferrari/SF-24_03.jpg.transform/9col/image.jpg',
+            excerpt: 'La Scuderia Ferrari ha svelato la nuova monoposto per la stagione 2025.'
+          },
+          {
+            title: 'Verstappen domina il GP del Messico',
+            link: 'https://www.formula1.com/en/latest/article.verstappen-mexico-gp.2.html',
+            pubDate: '27/10/2025',
+            image: 'https://www.formula1.com/content/dam/fom-website/manual/2024/2024CarLaunch/RedBull/RB20_01.jpg.transform/9col/image.jpg',
+            excerpt: 'Max Verstappen conquista la vittoria con una gara perfetta.'
+          },
+          {
+            title: 'Hamilton rinnova con Mercedes fino al 2027',
+            link: 'https://www.formula1.com/en/latest/article.hamilton-mercedes-renewal.3.html',
+            pubDate: '25/10/2025',
+            image: 'https://www.formula1.com/content/dam/fom-website/manual/2024/2024CarLaunch/Mercedes/W15_01.jpg.transform/9col/image.jpg',
+            excerpt: 'Lewis Hamilton prolunga il contratto con la Mercedes per altre due stagioni.'
+          },
+          {
+            title: 'McLaren punta al podio ad Austin',
+            link: 'https://www.formula1.com/en/latest/article.mclaren-austin-podium.4.html',
+            pubDate: '24/10/2025',
+            image: 'https://www.formula1.com/content/dam/fom-website/manual/2024/2024CarLaunch/McLaren/MCL38_01.jpg.transform/9col/image.jpg',
+            excerpt: 'La McLaren si prepara per una gara competitiva negli USA.'
+          }
+        ];
+        // Mostra la prima news come hero
+        renderHero(sampleNews[0]);
+        // Mostra le altre nella sidebar
+        renderSidebar(sampleNews.slice(1, 4));
+        // Mostra tutte nella griglia
+        grid.innerHTML = '';
+        sampleNews.forEach(n => grid.appendChild(buildCard(n)));
+        grid.style.display = '';
+      }
+
+      // Aggiorna fetchFeed per usare async/await
+      refreshBtn.addEventListener('click', () => {
+        fetchFeed().catch(handleFetchError);
+      });
+      
+      // Primo caricamento
+      fetchFeed().catch(handleFetchError);
+    })(feedUrl, proxyUrls);
+
+  </script>
+</body>
+</html>
